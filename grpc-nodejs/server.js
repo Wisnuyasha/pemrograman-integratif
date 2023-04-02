@@ -1,6 +1,13 @@
 // Import package 
 const grpc = require('@grpc/grpc-js');
+const app = require('express')
 var protoLoader = require('@grpc/proto-loader');
+const { db } = require("./database/config.js");
+const mhsRef = db.collection('mahasiswa');
+const mhsController = require('./controller/mhsController.js');
+
+// express backend
+app.use('/', mhsController);
 
 const options = {
   keepCase: true,
@@ -14,7 +21,7 @@ const options = {
 const PROTO_PATH = './mahasiswa.proto';
 var packageDefinition = protoLoader.loadSync(PROTO_PATH, options);
 // Load Proto 
-const mahasiswaProto = grpc.loadPackageDefinition(packageDefinition);
+const mahasiswaProto = grpc.loadPackageDefinition(packageDefinition).MahasiswaService;
 
 const server = new grpc.Server();
 
@@ -36,43 +43,81 @@ let mahasiswa = {
   ]
 }
 
-// defining service methods
-
-const addMahasiswa = async (call, callback) =>  {
-  const _mahasiswa = { ...call.request };
-  mahasiswa.mahasiswa.push(_mahasiswa);
-  callback(null, _mahasiswa);
+// Defining service methods
+const getAll = async (call, callback) => {
+  mhsRef.get()
+  .then(querySnapshot => {
+    const mhs = [];
+    querySnapshot.forEach(doc => {
+      mhs.push({ ...doc.data(), id: doc.id });
+    });
+    callback(null, { mhs });
+  })
+  .catch(error => {
+    console.error(error);
+    callback(error, { mhs: [] });
+  });
 }
 
-const getAll = async (call, callback) => {
-  callback(null, mahasiswa);
+const addMahasiswa = async (call, callback) =>  {
+  const mhs = { ...call.request };
+  mhsRef.add(mhs)
+    .then(docRef => {
+      callback(null, { ...mhs, id: docRef.id });
+    })
+    .catch(error => {
+      console.error(error);
+      callback(error, { ...mhs });
+    });
 }
 
 const getMahasiswa = async (call, callback) => {
-  const mahasiswaId = call.request.id;
-  const mahasiswaItem = mahasiswa.mahasiswa.find(({ id }) => mahasiswaId == id);
-  callback(null, mahasiswaItem);
+  const mhsId = call.request.id;
+  mhsRef.doc(mhsId).get()
+    .then(docSnapshot => {
+      if (docSnapshot.exists) {
+        callback(null, { ...docSnapshot.data(), id: docSnapshot.id });
+      } else {
+        callback(null, { id: null });
+      }
+    })
+    .catch(error => {
+      console.error(error);
+      callback(error, { id: null });
+    });
 }
 
 const editMahasiswa = async (call, callback) => {
-  const mahasiswaId = call.request.id;
-  const mahasiswaItem = mahasiswa.mahasiswa.find(({ id }) => mahasiswaId == id);
-  mahasiswaItem.nama = call.request.nama;
-  mahasiswaItem.nrp = call.request.nrp;
-  mahasiswaItem.nilai = call.request.nilai;
-  callback(null, mahasiswaItem)
+  const mhsID = call.request.id;
+  const mhsRefItem = mhsRef.doc(mhsID);
+  const mhs = { ...call.request };
+  mhsRefItem.set(mhs)
+    .then(() => {
+      callback(null, { ...mhs, id: mhsID });
+    })
+    .catch(error => {
+      console.error(error);
+      callback(error, { ...mhs });
+    });
+
 }
 
 const deleteMahasiswa = async (call, callback) => {
-  const mahasiswaId = call.request.id;
-  mahasiswa = mahasiswa.mahasiswa.filter(({ id }) => id !== mahasiswaId);
-  callback(null, {mahasiswa});
+  const mhsID = call.request.id;
+  mhsRef.doc(mhsID).delete()
+    .then(() => {
+      callback(null, { mhs: [] });
+    })
+    .catch(error => {
+      console.error(error);
+      callback(error, { mhs: [] });
+    });
 }
 
 // Add service in proto 
-server.addService(mahasiswaProto.MahasiswaService.service, {
-  addMahasiswa,
+server.addService(mahasiswaProto.service, {
   getAll,
+  addMahasiswa,
   getMahasiswa,
   editMahasiswa,
   deleteMahasiswa,
@@ -87,4 +132,6 @@ server.bindAsync(
     server.start();
   }
 )
-
+app.listen(5000, () => {
+  console.log('Server listening on port 5000');
+});

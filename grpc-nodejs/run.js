@@ -1,7 +1,7 @@
 const client = require("./client");
 
 // read data 
-client.getAll({}, (error, mahasiswa) => {
+client.getAllMhs({}, (error, mahasiswa) => {
   if (!error) {
     console.log('successfully fetch data')
     console.log(mahasiswa)
