@@ -1,6 +1,6 @@
 // Import package 
 const grpc = require('@grpc/grpc-js');
-const app = require('express')
+const app = require('express')();
 var protoLoader = require('@grpc/proto-loader');
 const { db } = require("./database/config.js");
 const mhsRef = db.collection('mahasiswa');
@@ -44,7 +44,7 @@ let mahasiswa = {
 }
 
 // Defining service methods
-const getAll = async (call, callback) => {
+const getAllMhs = async (call, callback) => {
   mhsRef.get()
   .then(querySnapshot => {
     const mhs = [];
@@ -116,7 +116,7 @@ const deleteMahasiswa = async (call, callback) => {
 
 // Add service in proto 
 server.addService(mahasiswaProto.service, {
-  getAll,
+  getAllMhs,
   addMahasiswa,
   getMahasiswa,
   editMahasiswa,
@@ -132,6 +132,7 @@ server.bindAsync(
     server.start();
   }
 )
+
 app.listen(5000, () => {
   console.log('Server listening on port 5000');
 });

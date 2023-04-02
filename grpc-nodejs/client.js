@@ -1,6 +1,8 @@
 // Import package 
 const grpc = require("@grpc/grpc-js");
 var protoLoader = require("@grpc/proto-loader");
+// Load service 
+const PROTO_PATH = "./mahasiswa.proto"
 
 const options = {
   keepCase: true,
@@ -12,8 +14,6 @@ const options = {
 
 var packageDefinition = protoLoader.loadSync(PROTO_PATH, options);
 
-// Load service 
-const PROTO_PATH = "./mahasiswa.proto"
 const MahasiswaService = grpc.loadPackageDefinition(packageDefinition).MahasiswaService;
 
 // Define client 
@@ -24,11 +24,11 @@ const client = new MahasiswaService(
 
 module.exports = client;
 
-client.getAllMhs({}, (error, notes) => {
-  if (!error) {
-    console.log('successfully fetch data')
-    console.log(notes)
-  } else {
-    console.error(error)
-  }
-})
+// client.getAllMhs({}, (error, notes) => {
+//   if (!error) {
+//     console.log('successfully fetch data')
+//     console.log(notes)
+//   } else {
+//     console.error(error)
+//   }
+// })
