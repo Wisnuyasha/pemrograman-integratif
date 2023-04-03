@@ -516,6 +516,7 @@ All the process are stored on firebase
 
 ![firebase](./img/firebase.jpg)
 
+**successfully solve assignments 1, 2, and 3**
 ## Others
 * Markdown Guide: https://www.markdownguide.org/basic-syntax/
     
