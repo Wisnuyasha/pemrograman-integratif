@@ -497,19 +497,24 @@ Use `node run.js` to test the method with certain input.
 
 Using Postman to CRUD our api
 
-![getAll](./img/runjs.jpg)
+Get / read all the data
+![getAll](./img/getAll.jpg)
 
-![getMhs](./img/runjs.jpg)
+Get / read certain id
+![getMhs](./img/getMhs.jpg)
 
-![post](./img/runjs.jpg)
+Post
+![post](./img/post.jpg)
 
-![update](./img/runjs.jpg)
+Update certain id
+![update](./img/update.jpg)
 
-![delete](./img/runjs.jpg)
+Delete certain id
+![delete](./img/delete.jpg)
 
 All the process are stored on firebase
 
-![firabase](./img/firebase.jpg)
+![firebase](./img/firebase.jpg)
 
 ## Others
 * Markdown Guide: https://www.markdownguide.org/basic-syntax/
