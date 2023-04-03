@@ -44,7 +44,7 @@ let mahasiswa = {
 }
 
 // Defining service methods
-const getAllMhs = async (call, callback) => {
+const getAll = async (call, callback) => {
   mhsRef.get()
   .then(querySnapshot => {
     const mhs = [];
@@ -116,7 +116,7 @@ const deleteMahasiswa = async (call, callback) => {
 
 // Add service in proto 
 server.addService(mahasiswaProto.service, {
-  getAllMhs,
+  getAll,
   addMahasiswa,
   getMahasiswa,
   editMahasiswa,
@@ -131,8 +131,8 @@ server.bindAsync(
     console.log("Server running at http://127.0.0.1:50051");
     server.start();
   }
-)
+);
 
-app.listen(5000, () => {
+app.listen(0000, () => {
   console.log('Server listening on port 5000');
 });

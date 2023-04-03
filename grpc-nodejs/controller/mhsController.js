@@ -6,7 +6,7 @@ router.use(bodyParser.json());
 
 // all endpoints method
 router.get('/mhs', (req, res) => {
-  client.getAllMhs({}, (error, response) => {
+  client.getAll({}, (error, response) => {
     if (error) {
       console.error(error);
       res.status(500).send(error);
@@ -25,7 +25,7 @@ router.post('/mhs', (req, res) => {
     nrp: nrp,
     nilai: nilai,
   };
-  client.addNotes(mhs, (error, response) => {
+  client.addMahasiswa(mhs, (error, response) => {
     if (error) {
       console.error(error);
       res.status(500).send(error);
@@ -40,7 +40,7 @@ router.delete('/mhs/:id', (req, res) => {
   const mhs = {
     id: mhsId,
   };
-  client.deleteNotes(mhs, (error, response) => {
+  client.deleteMahasiswa(mhs, (error, response) => {
     if (error) {
       console.error(error);
       res.status(500).send(error);
@@ -55,7 +55,7 @@ router.get('/mhs/:id', (req, res) => {
   const mhs = {
     id: mhsId,
   };
-  client.getNotes(mhs, (error, response) => {
+  client.getMahasiswa(mhs, (error, response) => {
     if (error) {
       console.error(error);
       res.status(500).send(error);
@@ -73,7 +73,7 @@ router.post('/mhs/:id/edit', (req, res) => {
     nrp: req.body.nrp,
     nilai: req.body.nilai,
   };
-  client.editNotes(mhs, (error, response) => {
+  client.editMahasiswa(mhs, (error, response) => {
     if (error) {
       console.error(error);
       res.status(500).send(error);
@@ -82,5 +82,6 @@ router.post('/mhs/:id/edit', (req, res) => {
     }
   });
 });
+
 
 module.exports = router;

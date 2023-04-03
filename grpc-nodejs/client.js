@@ -24,7 +24,7 @@ const client = new MahasiswaService(
 
 module.exports = client;
 
-// client.getAllMhs({}, (error, notes) => {
+// client.getAll({}, (error, notes) => {
 //   if (!error) {
 //     console.log('successfully fetch data')
 //     console.log(notes)
