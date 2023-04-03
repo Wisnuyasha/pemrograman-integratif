@@ -22,12 +22,12 @@ message Empty {}
 // Service 
 service MahasiswaService {
   // Create 
-  rpc AddMahasiswa (Mahasiswa) returns (Mahasiswa) {}
+  rpc addMahasiswa (Mahasiswa) returns (Mahasiswa) {}
   // Read 
-  rpc GetAll (Empty) returns (MahasiswaList) {}
-  rpc GetMahasiswa (MahasiswaId) returns (Mahasiswa) {}
+  rpc getAll (Empty) returns (MahasiswaList) {}
+  rpc getMahasiswa (MahasiswaId) returns (Mahasiswa) {}
   // Update
-  rpc EditMahasiswa (Mahasiswa) returns (Mahasiswa) {}
+  rpc editMahasiswa (Mahasiswa) returns (Mahasiswa) {}
   // Delete
-  rpc DeleteMahasiswa (MahasiswaId) returns (Empty) {}
+  rpc deleteMahasiswa (MahasiswaId) returns (Empty) {}
 }
