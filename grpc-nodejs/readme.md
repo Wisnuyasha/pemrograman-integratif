@@ -488,10 +488,28 @@ router.put('/mhs/:id/edit', (req, res) => {
 
 ### Documentation
 Use `npm start` to start the server (nodemon) to start the client.
+
 ![nodemon](./img/nodemon.jpg)
 
 Use `node run.js` to test the method with certain input.
-![runjs](./img/runjs.jng)
+
+![runjs](./img/runjs.jpg)
+
+Using Postman to CRUD our api
+
+![getAll](./img/runjs.jpg)
+
+![getMhs](./img/runjs.jpg)
+
+![post](./img/runjs.jpg)
+
+![update](./img/runjs.jpg)
+
+![delete](./img/runjs.jpg)
+
+All the process are stored on firebase
+
+![firabase](./img/firebase.jpg)
 
 ## Others
 * Markdown Guide: https://www.markdownguide.org/basic-syntax/
