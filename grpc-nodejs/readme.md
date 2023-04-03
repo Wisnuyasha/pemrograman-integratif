@@ -488,10 +488,10 @@ router.put('/mhs/:id/edit', (req, res) => {
 
 ### Documentation
 Use `npm start` to start the server (nodemon) to start the client.
-![nodemon](./img/nodemon.png)
+![nodemon](./img/nodemon.jpg)
 
 Use `node run.js` to test the method with certain input.
-![runjs](./img/runjs.png)
+![runjs](./img/runjs.jng)
 
 ## Others
 * Markdown Guide: https://www.markdownguide.org/basic-syntax/
