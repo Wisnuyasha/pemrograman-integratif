@@ -25,23 +25,7 @@ const mahasiswaProto = grpc.loadPackageDefinition(packageDefinition).MahasiswaSe
 
 const server = new grpc.Server();
 
-// Dummy data 
-let mahasiswa = {
-  mahasiswa: [
-    {
-      id: "1",
-      nama: "Rudi",
-      nrp: "5119",
-      nilai: 59
-    },
-    {
-      id: "2",
-      nama: "Budi",
-      nrp: "5118",
-      nilai: 60
-    }
-  ]
-}
+
 
 // Defining service methods
 const getAll = async (call, callback) => {
@@ -51,7 +35,7 @@ const getAll = async (call, callback) => {
     querySnapshot.forEach(doc => {
       mhs.push({ ...doc.data(), id: doc.id });
     });
-    callback(null, { mhs });
+    callback(null, { mahasiswa:mhs });
   })
   .catch(error => {
     console.error(error);
@@ -63,7 +47,13 @@ const addMahasiswa = async (call, callback) =>  {
   const mhs = { ...call.request };
   mhsRef.add(mhs)
     .then(docRef => {
-      callback(null, { ...mhs, id: docRef.id });
+      const mhsRefItem = mhsRef.doc(docRef.id);
+      mhsRefItem.set({
+        ...mhs,
+        id : docRef.id
+      }).then(() => {
+        callback(null, { ...mhs, id: docRef.id });
+      })
     })
     .catch(error => {
       console.error(error);
@@ -133,6 +123,6 @@ server.bindAsync(
   }
 );
 
-app.listen(0000, () => {
-  console.log('Server listening on port 5000');
+app.listen(8080, () => {
+  console.log('Server listening on port 8080');
 });

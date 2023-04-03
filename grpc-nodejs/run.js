@@ -13,10 +13,9 @@ client.getAll({}, (error, mahasiswa) => {
 // add mahasiswa 
 client.addMahasiswa(
   {
-    id: "123",
-    nama: "inu",
-    nrp: "05",
-    nilai: 90
+    nama: "anap",
+    nrp: "5027211034",
+    nilai: 100
   },
   (error, mahasiswa) => {
     if (!error) {
@@ -31,10 +30,10 @@ client.addMahasiswa(
 // edit mahasiswa 
 client.editMahasiswa(
   {
-    id: "2xsJJAtBzC7H0g2fRs72",
-    nama: "Budi",
-    nrp: "5118",
-    nilai: 0
+    id: "vFOpF0gMSPEoSptKDvei",
+    nama: "reynold",
+    nrp: "5027211033",
+    nilai: 99
   },
   (error, mahasiswa) => {
     if (!error) {
@@ -49,7 +48,7 @@ client.editMahasiswa(
 // delete mahasiswa 
 client.deleteMahasiswa(
   {
-    id: "96S7JNGGHavMFLYpx5YL"
+    id: "vFOpF0gMSPEoSptKDvei"
   }, 
   (error, mahasiswa) => {
     if (!error) {

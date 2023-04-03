@@ -5,6 +5,7 @@ const bodyParser = require('body-parser');
 router.use(bodyParser.json());
 
 // all endpoints method
+// getAll/read method
 router.get('/mhs', (req, res) => {
   client.getAll({}, (error, response) => {
     if (error) {
@@ -16,6 +17,7 @@ router.get('/mhs', (req, res) => {
   });
 });
 
+// post/create method
 router.post('/mhs', (req, res) => {
   const nama = req.body.nama;
   const nrp = req.body.nrp;
@@ -35,6 +37,7 @@ router.post('/mhs', (req, res) => {
   });
 });
 
+// delete method
 router.delete('/mhs/:id', (req, res) => {
   const mhsId = req.params.id;
   const mhs = {
@@ -50,6 +53,7 @@ router.delete('/mhs/:id', (req, res) => {
   });
 });
 
+// get mahasiswa/id method
 router.get('/mhs/:id', (req, res) => {
   const mhsId = req.params.id;
   const mhs = {
@@ -65,7 +69,8 @@ router.get('/mhs/:id', (req, res) => {
   });
 });
 
-router.post('/mhs/:id/edit', (req, res) => {
+// update mahasiswa/2 method
+router.put('/mhs/:id/edit', (req, res) => {
   const mhsId = req.params.id;
   const mhs = {
     id: mhsId,
