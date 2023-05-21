@@ -1,60 +1,60 @@
 const client = require("./client");
 
 // read data 
-client.getAllMhs({}, (error, mahasiswa) => {
+client.getAllNotes({}, (error, notes) => {
   if (!error) {
     console.log('successfully fetch data')
-    console.log(mahasiswa)
+    console.log(notes)
   } else {
     console.error(error)
   }
 })
 
-// add mahasiswa 
-client.addMahasiswa(
+// add notes 
+client.addNotes(
   {
     id: "3",
-    nama: "Rudi",
-    nrp: "5119",
-    nilai: 90
+    title: "Note 3",
+    content: "Content 3",
+    count: 90
   },
-  (error, mahasiswa) => {
+  (error, notes) => {
     if (!error) {
       console.log('successfully create data')
-      console.log(mahasiswa)
+      console.log(notes)
     } else {
       console.error(error)
     }
   }
 )
 
-// edit mahasiswa 
-client.editMahasiswa(
+// edit notes 
+client.editNotes(
   {
     id: "2",
-    nama: "Budi edited",
-    nrp: "5118 edited",
-    nilai: 100
+    title: "Note 2 edited",
+    content: "Content 2 edited",
+    count: 100
   },
-  (error, mahasiswa) => {
+  (error, notes) => {
     if (!error) {
       console.log('successfully edit data')
-      console.log(mahasiswa)
+      console.log(notes)
     } else {
       console.error(error)
     }
   }
 )
 
-// delete mahasiswa 
-client.deleteMahasiswa(
+// delete notes 
+client.deleteNotes(
   {
     id: "2"
   }, 
-  (error, mahasiswa) => {
+  (error, notes) => {
     if (!error) {
       console.log('successfully delete data')
-      console.log(mahasiswa)
+      console.log(notes)
     } else {
       console.error(error)
     }

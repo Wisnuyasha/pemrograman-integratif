@@ -11,10 +11,11 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@grpc/grpc-js": "^1.8.12",
+    "@grpc/grpc-js": "^1.8.13",
+    "@grpc/proto-loader": "^0.7.6",
+    "body-parser": "^1.20.2",
+    "express": "^4.18.2",
     "firebase": "^9.19.1",
-    "mongoose": "^7.0.3",
-    "nodemon": "^2.0.22",
-    "npm-watch": "^0.11.0"
+    "http": "^0.0.1-security"
   }
 }
