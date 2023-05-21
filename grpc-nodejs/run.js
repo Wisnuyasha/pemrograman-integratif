@@ -1,7 +1,7 @@
 const client = require("./client");
 
 // read data 
-client.getAllNotes({}, (error, notes) => {
+client.getAll({}, (error, mahasiswa) => {
   if (!error) {
     console.log('successfully fetch data')
     console.log(notes)
@@ -13,10 +13,9 @@ client.getAllNotes({}, (error, notes) => {
 // add notes 
 client.addNotes(
   {
-    id: "3",
-    title: "Note 3",
-    content: "Content 3",
-    count: 90
+    nama: "reyhan",
+    nrp: "5027211042",
+    nilai: 100
   },
   (error, notes) => {
     if (!error) {
@@ -31,10 +30,10 @@ client.addNotes(
 // edit notes 
 client.editNotes(
   {
-    id: "2",
-    title: "Note 2 edited",
-    content: "Content 2 edited",
-    count: 100
+    id: "0a3DUp3gZhLMa0CyBakn",
+    nama: "inu tapi diedit lagi",
+    nrp: "5027211033 edited lagi",
+    nilai: 1
   },
   (error, notes) => {
     if (!error) {
@@ -49,12 +48,11 @@ client.editNotes(
 // delete notes 
 client.deleteNotes(
   {
-    id: "2"
+    id: "4xuoEvuD6Jr8kqDduAPb"
   }, 
   (error, notes) => {
     if (!error) {
       console.log('successfully delete data')
-      console.log(notes)
     } else {
       console.error(error)
     }

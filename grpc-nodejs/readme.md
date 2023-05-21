@@ -26,9 +26,9 @@ We will build basic CRUD application using gRPC API and Protobuf in NodeJS.
     ```bash
     npm init
     ```
-    Install grpc library
+    Install all library
     ```bash
-    npm i @grpc/grpc-js
+    npm i
     ```
 
 4. Create 4 files:
@@ -45,79 +45,124 @@ We will build basic CRUD application using gRPC API and Protobuf in NodeJS.
 
 #### a. Proto file
 ```protobuf
-// Service 
+syntax = "proto3";
+message Mahasiswa {
+  string id = 1;
+  string nama = 2;
+  string nrp = 3;
+  int64 nilai = 4;
+}
+message MahasiswaList {
+  repeated Mahasiswa mahasiswa = 1;
+}
+message MahasiswaId {
+  string id = 1;
+}
+message Empty {}
+
 service MahasiswaService {
   // Create 
-  rpc AddMahasiswa (Mahasiswa) returns (Mahasiswa) {}
+  rpc addMahasiswa (Mahasiswa) returns (Mahasiswa) {}
   // Read 
-  rpc GetAll (Empty) returns (MahasiswaList) {}
-  rpc GetMahasiswa (MahasiswaId) returns (Mahasiswa) {}
+  rpc getAll (Empty) returns (MahasiswaList) {}
+  rpc getMahasiswa (MahasiswaId) returns (Mahasiswa) {}
   // Update
-  rpc EditMahasiswa (Mahasiswa) returns (Mahasiswa) {}
+  rpc editMahasiswa (Mahasiswa) returns (Mahasiswa) {}
   // Delete
-  rpc DeleteMahasiswa (MahasiswaId) returns (Empty) {}
+  rpc deleteMahasiswa (MahasiswaId) returns (Empty) {}
 }
 ```
 
 #### b. Server
-Dummy data
-
-```js
-// Dummy data 
-let mahasiswa = {
-  mahasiswa: [
-    {
-      id: "1",
-      nama: "Rudi",
-      nrp: "5119",
-      nilai: 59
-    },
-    {
-      id: "2",
-      nama: "Budi",
-      nrp: "5118",
-      nilai: 60
-    }
-  ]
-}
-```
 
 Add Service in server.js
 
 ```js
 
+// Defining service methods
+const getAll = async (call, callback) => {
+  mhsRef.get()
+  .then(querySnapshot => {
+    const mhs = [];
+    querySnapshot.forEach(doc => {
+      mhs.push({ ...doc.data(), id: doc.id });
+    });
+    callback(null, { mahasiswa:mhs });
+  })
+  .catch(error => {
+    console.error(error);
+    callback(error, { mhs: [] });
+  });
+}
+
+const addMahasiswa = async (call, callback) =>  {
+  const mhs = { ...call.request };
+  mhsRef.add(mhs)
+    .then(docRef => {
+      const mhsRefItem = mhsRef.doc(docRef.id);
+      mhsRefItem.set({
+        ...mhs,
+        id : docRef.id
+      }).then(() => {
+        callback(null, { ...mhs, id: docRef.id });
+      })
+    })
+    .catch(error => {
+      console.error(error);
+      callback(error, { ...mhs });
+    });
+}
+
+const getMahasiswa = async (call, callback) => {
+  const mhsId = call.request.id;
+  mhsRef.doc(mhsId).get()
+    .then(docSnapshot => {
+      if (docSnapshot.exists) {
+        callback(null, { ...docSnapshot.data(), id: docSnapshot.id });
+      } else {
+        callback(null, { id: null });
+      }
+    })
+    .catch(error => {
+      console.error(error);
+      callback(error, { id: null });
+    });
+}
+
+const editMahasiswa = async (call, callback) => {
+  const mhsID = call.request.id;
+  const mhsRefItem = mhsRef.doc(mhsID);
+  const mhs = { ...call.request };
+  mhsRefItem.set(mhs)
+    .then(() => {
+      callback(null, { ...mhs, id: mhsID });
+    })
+    .catch(error => {
+      console.error(error);
+      callback(error, { ...mhs });
+    });
+
+}
+
+const deleteMahasiswa = async (call, callback) => {
+  const mhsID = call.request.id;
+  mhsRef.doc(mhsID).delete()
+    .then(() => {
+      callback(null, { mhs: [] });
+    })
+    .catch(error => {
+      console.error(error);
+      callback(error, { mhs: [] });
+    });
+}
+
 // Add service in proto 
-server.addService(mahasiswaProto.MahasiswaService.service, {
-  // Create
-  addMahasiswa: (call, callback) =>  {
-    const _mahasiswa = { ...call.request };
-    mahasiswa.mahasiswa.push(_mahasiswa);
-    callback(null, _mahasiswa);
-  },
-  // Read 
-  getAll: (call, callback) => {
-    callback(null, mahasiswa);
-  },
-  getMahasiswa: (call, callback) => {
-    const mahasiswaId = call.request.id;
-    const mahasiswaItem = mahasiswa.mahasiswa.find(({ id }) => mahasiswaId == id);
-    callback(null, mahasiswaItem);
-  },
-  // Update
-  editMahasiswa: (call, callback) => {
-    const mahasiswaId = call.request.id;
-    const mahasiswaItem = mahasiswa.mahasiswa.find(({ id }) => mahasiswaId == id);
-    mahasiswaItem.nama = call.request.nama;
-    mahasiswaItem.nrp = call.request.nrp;
-    mahasiswaItem.nilai = call.request.nilai;
-    callback(null, mahasiswaItem)
-  },
-  // Delete 
-  deleteMahasiswa: (call, callback) => {
-    const mahasiswaId = call.request.id;
-    mahasiswa = mahasiswa.mahasiswa.filter(({ id }) => id !== mahasiswaId);
-    callback(null, {mahasiswa});
-  },
+server.addService(mahasiswaProto.service, {
+  getAll,
+  addMahasiswa,
+  getMahasiswa,
+  editMahasiswa,
+  deleteMahasiswa,
 })
 ```
 
@@ -140,10 +185,9 @@ client.getAll({}, (error, mahasiswa) => {
 // add mahasiswa 
 client.addMahasiswa(
   {
-    id: "3",
-    nama: "Rudi",
-    nrp: "5119",
-    nilai: 90
+    nama: "anap",
+    nrp: "5027211034",
+    nilai: 100
   },
   (error, mahasiswa) => {
     if (!error) {
@@ -158,10 +202,10 @@ client.addMahasiswa(
 // edit mahasiswa 
 client.editMahasiswa(
   {
-    id: "2",
-    nama: "Budi edited",
-    nrp: "5118 edited",
-    nilai: 100
+    id: "vFOpF0gMSPEoSptKDvei",
+    nama: "reynold",
+    nrp: "5027211033",
+    nilai: 99
   },
   (error, mahasiswa) => {
     if (!error) {
@@ -176,12 +220,11 @@ client.editMahasiswa(
 // delete mahasiswa 
 client.deleteMahasiswa(
   {
-    id: "2"
+    id: "vFOpF0gMSPEoSptKDvei"
   }, 
   (error, mahasiswa) => {
     if (!error) {
       console.log('successfully delete data')
-      console.log(mahasiswa)
     } else {
       console.error(error)
     }
@@ -213,6 +256,267 @@ Optional but preferred:
 
 4. Add simple UI 
 
+Connect to firebase (config in **/database/config.js**)
+
+```js
+const firebase = require('firebase/compat/app');
+require('firebase/compat/firestore');
+
+const firebaseConfig = {
+    apiKey: "AIzaSyDemtJN14v73EW__Nd696Rp--z5IGSmPw0",
+    authDomain: "grpc-node-firebase-express.firebaseapp.com",
+    projectId: "grpc-node-firebase-express",
+    storageBucket: "grpc-node-firebase-express.appspot.com",
+    messagingSenderId: "115925109591",
+    appId: "1:115925109591:web:9d33971b551f1b2c468c12",
+    measurementId: "G-ZMG040B16M"
+  };
+  const firebaseApp = firebase.initializeApp(firebaseConfig);
+  const db = firebaseApp.firestore();
+
+  module.exports = { firebaseApp, db };
+```
+
+Import/define package and express for api
+```js
+// Import package 
+const grpc = require('@grpc/grpc-js');
+const app = require('express')();
+var protoLoader = require('@grpc/proto-loader');
+const { db } = require("./database/config.js");
+const mhsRef = db.collection('mahasiswa');
+const mhsController = require('./controller/mhsController.js');
+
+// express backend
+app.use('/', mhsController);
+```
+
+Change Method for service (with firestore)
+```js
+// Defining service methods
+const getAll = async (call, callback) => {
+  mhsRef.get()
+  .then(querySnapshot => {
+    const mhs = [];
+    querySnapshot.forEach(doc => {
+      mhs.push({ ...doc.data(), id: doc.id });
+    });
+    callback(null, { mahasiswa:mhs });
+  })
+  .catch(error => {
+    console.error(error);
+    callback(error, { mhs: [] });
+  });
+}
+
+const addMahasiswa = async (call, callback) =>  {
+  const mhs = { ...call.request };
+  mhsRef.add(mhs)
+    .then(docRef => {
+      const mhsRefItem = mhsRef.doc(docRef.id);
+      mhsRefItem.set({
+        ...mhs,
+        id : docRef.id
+      }).then(() => {
+        callback(null, { ...mhs, id: docRef.id });
+      })
+    })
+    .catch(error => {
+      console.error(error);
+      callback(error, { ...mhs });
+    });
+}
+
+const getMahasiswa = async (call, callback) => {
+  const mhsId = call.request.id;
+  mhsRef.doc(mhsId).get()
+    .then(docSnapshot => {
+      if (docSnapshot.exists) {
+        callback(null, { ...docSnapshot.data(), id: docSnapshot.id });
+      } else {
+        callback(null, { id: null });
+      }
+    })
+    .catch(error => {
+      console.error(error);
+      callback(error, { id: null });
+    });
+}
+
+const editMahasiswa = async (call, callback) => {
+  const mhsID = call.request.id;
+  const mhsRefItem = mhsRef.doc(mhsID);
+  const mhs = { ...call.request };
+  mhsRefItem.set(mhs)
+    .then(() => {
+      callback(null, { ...mhs, id: mhsID });
+    })
+    .catch(error => {
+      console.error(error);
+      callback(error, { ...mhs });
+    });
+
+}
+
+const deleteMahasiswa = async (call, callback) => {
+  const mhsID = call.request.id;
+  mhsRef.doc(mhsID).delete()
+    .then(() => {
+      callback(null, { mhs: [] });
+    })
+    .catch(error => {
+      console.error(error);
+      callback(error, { mhs: [] });
+    });
+}
+
+```
+
+Add service to proto
+```js
+// Add service in proto 
+const PROTO_PATH = './mahasiswa.proto';
+var packageDefinition = protoLoader.loadSync(PROTO_PATH, options);
+const mahasiswaProto = grpc.loadPackageDefinition(packageDefinition).MahasiswaService;
+server.addService(mahasiswaProto.service, {
+  getAll,
+  addMahasiswa,
+  getMahasiswa,
+  editMahasiswa,
+  deleteMahasiswa,
+})
+```
+
+CRUD All the method with express (HTTP request) to firestore
+
+Defining/Importing all the packages
+```js
+const express = require('express');
+const router = express.Router();
+const client = require('../client');
+const bodyParser = require('body-parser');
+router.use(bodyParser.json());
+```
+
+Create all method for each endpoints
+```js
+// all endpoints method
+// getAll/read method
+router.get('/mhs', (req, res) => {
+  client.getAll({}, (error, response) => {
+    if (error) {
+      console.error(error);
+      res.status(500).send(error);
+    } else {
+      res.send(response);
+    }
+  });
+});
+
+// post/create method
+router.post('/mhs', (req, res) => {
+  const nama = req.body.nama;
+  const nrp = req.body.nrp;
+  const nilai = req.body.nilai;
+  const mhs = {
+    nama: nama,
+    nrp: nrp,
+    nilai: nilai,
+  };
+  client.addMahasiswa(mhs, (error, response) => {
+    if (error) {
+      console.error(error);
+      res.status(500).send(error);
+    } else {
+      res.send(response);
+    }
+  });
+});
+
+// delete method
+router.delete('/mhs/:id', (req, res) => {
+  const mhsId = req.params.id;
+  const mhs = {
+    id: mhsId,
+  };
+  client.deleteMahasiswa(mhs, (error, response) => {
+    if (error) {
+      console.error(error);
+      res.status(500).send(error);
+    } else {
+      res.send(response);
+    }
+  });
+});
+
+// get mahasiswa/id method
+router.get('/mhs/:id', (req, res) => {
+  const mhsId = req.params.id;
+  const mhs = {
+    id: mhsId,
+  };
+  client.getMahasiswa(mhs, (error, response) => {
+    if (error) {
+      console.error(error);
+      res.status(500).send(error);
+    } else {
+      res.send(response);
+    }
+  });
+});
+
+// update mahasiswa/2 method
+router.put('/mhs/:id/edit', (req, res) => {
+  const mhsId = req.params.id;
+  const mhs = {
+    id: mhsId,
+    nama: req.body.nama,
+    nrp: req.body.nrp,
+    nilai: req.body.nilai,
+  };
+  client.editMahasiswa(mhs, (error, response) => {
+    if (error) {
+      console.error(error);
+      res.status(500).send(error);
+    } else {
+      res.send(response);
+    }
+  });
+});
+
+```
+
+### Documentation
+Use `npm start` to start the server (nodemon) to start the client.
+
+![nodemon](./img/nodemon.jpg)
+
+Use `node run.js` to test the method with certain input.
+
+![runjs](./img/runjs.jpg)
+
+Using Postman to CRUD our api
+
+Get / read all the data
+![getAll](./img/getAll.jpg)
+
+Get / read certain id
+![getMhs](./img/getMhs.jpg)
+
+Post
+![post](./img/post.jpg)
+
+Update certain id
+![update](./img/update.jpg)
+
+Delete certain id
+![delete](./img/delete.jpg)
+
+All the process are stored on firebase
+
+![firebase](./img/firebase.jpg)
+
+**successfully solve assignments 1, 2, and 3**
 ## Others
 * Markdown Guide: https://www.markdownguide.org/basic-syntax/
     
