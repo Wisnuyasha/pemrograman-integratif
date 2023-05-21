@@ -29,3 +29,11 @@ client.getAllNotes({}, (error, notes) => {
     console.error(error)
   }
 })
+// client.getAll({}, (error, notes) => {
+//   if (!error) {
+//     console.log('successfully fetch data')
+//     console.log(notes)
+//   } else {
+//     console.error(error)
+//   }
+// })
